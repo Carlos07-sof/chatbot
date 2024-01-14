@@ -1,22 +1,24 @@
-import nltk                             # Biblioteca para procesamiento del lenguaje natural
-import json                             # Módulo para manejar archivos JSON
-import spacy                            # Biblioteca para procesamiento del lenguaje natural
-import random                           # Módulo para generación de números aleatorios
-import pickle                           # Módulo para serializar y deserializar objetos
-import threading                        # Importar el módulo threading para hacer el hilo
-import numpy as np                      # Biblioteca para operaciones numéricas
-import es_core_news_md                  # Modelo de spacy para palabras en español
-from keras.models import load_model     # Importar un modelo de Keras (biblioteca para aprendizaje profundo)
+import nltk
+import json
+import spacy
+import random
+import pickle
+import threading
+import numpy as np
+from keras.models import load_model
 from genpre import GenerarPregunta
+from spacy.cli.download import download as spacy_download
 
 class ChatBot:
-
     def __init__(self):
-
         self.generar = GenerarPregunta()
-        # Cargar el modelo de spacy para el procesamiento en español
+
+        # Descargar el modelo spaCy para el procesamiento en español si no está presente
+        if not spacy.util.is_package('es_core_news_md'):
+            spacy_download('es_core_news_md')
+
+        # Cargar el modelo spaCy
         self.nlp = spacy.load('es_core_news_md')
-        self.nlp = es_core_news_md.load()
 
         # Importar archivos generados del entrenamiento
         self.intents_json = json.loads(open('data/intents.json', 'r', encoding='utf-8').read())
@@ -24,14 +26,12 @@ class ChatBot:
         self.classes = pickle.load(open('modelos/classes.pkl', 'rb'))
         self.model = load_model('modelos/chatbot_model.h5')
 
-    # pasamos las palabras de la oracion a su forma raiz
     def clean_up_sentence(self, sentence):
         sentence_words = nltk.word_tokenize(sentence)
         sentence_words = [token.lemma_ for token in self.nlp(" ".join(sentence_words))]
         print(f'\nlemmas: {sentence_words}')
         return sentence_words
 
-    # convertimos la informacion a unos y ceros según si estan presentes en los patrones
     def bag_of_words(self, sentence):
         sentence_words = self.clean_up_sentence(sentence)
         bag = [0] * len(self.words)
@@ -39,10 +39,8 @@ class ChatBot:
             for i, word in enumerate(self.words):
                 if word == w:
                     bag[i] = 1
-        # print(f'\nbag: {bag}')
         return np.array(bag)
 
-    # predecimos la categoria a la que pertenece la oracion
     def predict_class(self, sentence):
         bow = self.bag_of_words(sentence)
 
@@ -53,16 +51,13 @@ class ChatBot:
         else:
             category = 'no_respuesta'
             try:
-                threading.Thread(target = self.generar.getQuestion, args = (sentence,)).start()
+                threading.Thread(target=self.generar.getQuestion, args=(sentence,)).start()
             except Exception as e:
                 print(f"*ERROR HILO (chatbot): {e}*")
-            # finally:
-            #     self.generar = None
 
         print(f'\ncategory: {category}')
         return category
 
-    # obtenemos una respuesta aleatoria
     def get_response(self, tag):
         list_of_intents = self.intents_json['intents']
         result = ""
@@ -74,7 +69,6 @@ class ChatBot:
                 result = False
         return result
     
-    # respuesta que espera el api
     def response(self, sentence):
         try:
             ints = self.predict_class(sentence)
@@ -83,7 +77,7 @@ class ChatBot:
         except Exception as e:
             print(f"*ERROR (chatbot): {e}*")
             return False
-        
+
     
     # test del chatbot
     # def chatTest(self):
