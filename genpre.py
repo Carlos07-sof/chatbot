@@ -2,7 +2,6 @@ import json
 import spacy
 import es_core_news_md
 from controller import PreguntasController
-
 class GenerarPregunta:
     def __init__(self):
         self.pregunta = PreguntasController()
