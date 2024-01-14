@@ -1,12 +1,18 @@
 import json
 import spacy
-import es_core_news_md
+from spacy.cli.download import download as spacy_download
 from controller import PreguntasController
+
 class GenerarPregunta:
     def __init__(self):
         self.pregunta = PreguntasController()
+
+        # Descargar el modelo si no está presente
+        if not spacy.util.is_package('es_core_news_md'):
+            spacy_download('es_core_news_md')
+
+        # Cargar el modelo
         self.nlp = spacy.load('es_core_news_md')
-        self.nlp = es_core_news_md.load()
 
     def procesarPregunta(self, pregunta):
         lemmas = [token.lemma_ for token in pregunta]
@@ -21,25 +27,24 @@ class GenerarPregunta:
                 newEtiqueta.append(token.lemma_)
             if token.pos_ == 'PROPN':
                 newEtiqueta.append(token.lemma_)
-        
+
         etiqueta = "_".join(newEtiqueta)
         return etiqueta
-    
+
     def sendJSON(self, data):
         dataJSON = {"etiqueta": None, "pregunta": None}
         dataJSON['etiqueta'] = self.procesarEtiqueta(data)
         dataJSON['pregunta'] = self.procesarPregunta(data)
         return dataJSON
-    
-    def build(self,sentence):
+
+    def build(self, sentence):
         doc = self.nlp(sentence)
         response = self.sendJSON(doc)
-        response = json.dumps(response, ensure_ascii = False)
+        response = json.dumps(response, ensure_ascii=False)
         return response
-    
-    def getQuestion(self,pregunta):
+
+    def getQuestion(self, pregunta):
         try:
-            # print(f'STATUS (gen-pre): {self.pregunta.sendQuestion(self.build(pregunta))}')
             self.pregunta.sendQuestion(self.build(pregunta))
             return True
         except Exception as e:
