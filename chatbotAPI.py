@@ -1,11 +1,6 @@
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
-from chatbot import ChatBot 
-
-
-from datetime import datetime, timedelta
-import jwt  
-
+from chatbot import ChatBot
 
 class ChatbotAPI:
     def __init__(self):
@@ -18,7 +13,9 @@ class ChatbotAPI:
         self.app.route('/chatbot/', methods=['POST'])(self.endpoint_chatbot)
         self.app.errorhandler(404)(self.not_found)
         self.app.errorhandler(405)(self.method_not_allowed)
-        
+
+        # Explicitly set the 'application' attribute to the Flask app instance
+        self.application = self.app
 
     def inicio(self):
         return jsonify({"mensaje": "Bienvenido al asistente UNACHAT"})
@@ -45,7 +42,7 @@ class ChatbotAPI:
         return make_response(jsonify({'error': 'Método no permitido'}), 405)
 
     def run(self):
-        self.app.run(debug=True)
+        self.application.run(debug=True)
 
 if __name__ == '__main__':
     chatbot_api = ChatbotAPI()
