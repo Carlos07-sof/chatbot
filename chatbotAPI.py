@@ -3,7 +3,7 @@ from flask_cors import CORS
 from chatbot import ChatBot
 
 class ChatbotAPI:
-    def __init__(self):
+    def __init__(self, config=None):
         self.app = Flask(__name__)
         CORS(self.app)
         self.chat = ChatBot()
@@ -36,10 +36,14 @@ class ChatbotAPI:
         def method_not_allowed(error):
             return make_response(jsonify({'error': 'Método no permitido'}), 405)
 
-def create_app():
-    chatbot_api = ChatbotAPI()
-    return chatbot_api.app
+    def run(self):
+        self.app.run(debug=True)
+
+# Crear una instancia de la aplicación
+app = ChatbotAPI()
+
+# Establecer la aplicación de Flask
+application = app.app
 
 if __name__ == '__main__':
-    application = create_app()
-    application.run(debug=True)
+    app.run()
