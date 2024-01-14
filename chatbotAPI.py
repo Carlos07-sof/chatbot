@@ -47,5 +47,6 @@ class ChatbotAPI:
 
 if __name__ == '__main__':
     chatbot_api = ChatbotAPI()
-    app = chatbot_api.create_app()
+    app = chatbot_api.app  # Obtén la instancia de la aplicación Flask
     app.run(debug=True)
+
