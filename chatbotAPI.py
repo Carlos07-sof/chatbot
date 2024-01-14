@@ -4,17 +4,15 @@ from chatbot import ChatBot
 
 class ChatbotAPI:
     def __init__(self):
+        self.app = Flask(__name__)
+        CORS(self.app)
         self.chat = ChatBot()
 
-    def create_app(self):
-        app = Flask(__name__)
-        CORS(app)
-
-        @app.route('/')
+        @self.app.route('/')
         def inicio():
             return jsonify({"mensaje": "Bienvenido al asistente UNACHAT"})
 
-        @app.route('/chatbot/', methods=['POST'])
+        @self.app.route('/chatbot/', methods=['POST'])
         def endpoint_chatbot():
             try:
                 data = request.get_json()
@@ -30,19 +28,16 @@ class ChatbotAPI:
             except Exception as e:
                 return jsonify({'mensaje': f'Error: {str(e)}'}), 500
 
-        @app.errorhandler(404)
+        @self.app.errorhandler(404)
         def not_found(error):
             return make_response(jsonify({'error': 'No se encontró el recurso solicitado'}), 404)
 
-        @app.errorhandler(405)
+        @self.app.errorhandler(405)
         def method_not_allowed(error):
             return make_response(jsonify({'error': 'Método no permitido'}), 405)
 
-        return app
-
     def run(self):
-        app = self.create_app()
-        app.run(debug=True)
+        self.app.run(debug=True)
 
 if __name__ == '__main__':
     chatbot_api = ChatbotAPI()
