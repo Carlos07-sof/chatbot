@@ -36,9 +36,10 @@ class ChatbotAPI:
         def method_not_allowed(error):
             return make_response(jsonify({'error': 'Método no permitido'}), 405)
 
-    def run(self):
-        self.app.run(debug=True)
+def create_app():
+    chatbot_api = ChatbotAPI()
+    return chatbot_api.app
 
 if __name__ == '__main__':
-    chatbot_api = ChatbotAPI()
-    chatbot_api.run()
+    application = create_app()
+    application.run(debug=True)
