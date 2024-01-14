@@ -8,14 +8,16 @@ class ChatbotAPI:
     def __init__(self):
         self.app = Flask(__name__)
         CORS(self.app)
-
         self.chat = ChatBot()
 
         self.app.route('/')(self.inicio)
         self.app.route('/chatbot/', methods=['POST'])(self.endpoint_chatbot)
         self.app.errorhandler(404)(self.not_found)
         self.app.errorhandler(405)(self.method_not_allowed)
-        
+
+    def create_app(self):
+        return self.app
+
     def inicio(self):
         return jsonify({"mensaje": "Bienvenido al asistente UNACHAT"})
 
@@ -45,4 +47,5 @@ class ChatbotAPI:
 
 if __name__ == '__main__':
     chatbot_api = ChatbotAPI()
-    chatbot_api.run()
+    app = chatbot_api.create_app()
+    app.run(debug=True)
