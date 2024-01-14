@@ -8,15 +8,13 @@ class ChatbotAPI:
     def __init__(self):
         self.app = Flask(__name__)
         CORS(self.app)
+
         self.chat = ChatBot()
 
         self.app.route('/')(self.inicio)
         self.app.route('/chatbot/', methods=['POST'])(self.endpoint_chatbot)
         self.app.errorhandler(404)(self.not_found)
         self.app.errorhandler(405)(self.method_not_allowed)
-
-    def create_app(self):
-        return self.app
 
     def inicio(self):
         return jsonify({"mensaje": "Bienvenido al asistente UNACHAT"})
@@ -45,8 +43,10 @@ class ChatbotAPI:
     def run(self):
         self.app.run(debug=True)
 
-if __name__ == '__main__':
-    chatbot_api = ChatbotAPI()
-    app = chatbot_api.app  # Obtén la instancia de la aplicación Flask
-    app.run(debug=True)
+# Crear una instancia de la aplicación fuera de __init__
+chatbot_api = ChatbotAPI()
 
+# Usar la instancia de la aplicación para el comando de Gunicorn
+app = chatbot_api.app
+if __name__ == '__main__':
+    app.run(debug=True)
