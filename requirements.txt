@@ -9,3 +9,4 @@ Werkzeug==2.2.2
 zipp==3.10.0
 Flask-CORS==4.0.0
 nltk==3.8.1
+spacy==3.7.2
