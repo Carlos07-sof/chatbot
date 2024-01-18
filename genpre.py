@@ -52,20 +52,3 @@ class GenerarPregunta:
             return False
         # finally:
         #     self.pregunta = None
-
-# # Ejemplo de uso
-# if __name__ == "__main__":
-#     test = GenerarPregunta()
-
-#     # Oración de ejemplo en español
-#     # sentence = "como me inscribo a la universidad"
-#     # sentence = "cuando son las convocatorias"
-#     # sentence = "cuando se abren convocatorias"
-#     # sentence = "cuando seran las convocatorias de la escuela"
-#     # sentence = "cuando se realizan las convocatorias"
-#     # sentence = "cuando terminan las convocatorias"
-#     # sentence = "cuando cierran las convocatorias"
-#     sentence = "cuando es la fecha del examen de admision y cuando dan los resultados"
-
-#     # print(f'JSON: {test.build(sentence)}')
-#     print(test.getQuestion(sentence))
