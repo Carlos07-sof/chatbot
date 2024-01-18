@@ -14,8 +14,3 @@ class PreguntasController:
             return False
         # finally:
         #     self.modelPreguntas = None
-
-# # Ejemplo de uso
-# if __name__ == "__main__":
-#     test = PreguntasController()
-#     test.sendQuestion('{"etiqueta": "convocatoria","pregunta": "PRE_comvo"}')
