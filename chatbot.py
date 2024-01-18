@@ -77,25 +77,3 @@ class ChatBot:
         except Exception as e:
             print(f"*ERROR (chatbot): {e}*")
             return False
-
-    
-    # test del chatbot
-    # def chatTest(self):
-    #     print("\n\n¡Bienvenido al Chatbot!")
-    #     print("Escribe 'salir' para terminar la conversacion.\n")
-
-    #     while True:
-    #         mensaje_usuario = input("usuario: ")
-
-    #         if mensaje_usuario.lower() in ['salir', 'adios']:
-    #             print("\n\nHasta luego. ¡Espero que hayas tenido una buena conversacion!\n")
-    #             break
-
-    #         ints = self.predict_class(mensaje_usuario)
-    #         res = self.get_response(ints)
-    #         print(f"\nchatbot: {res}\n")
-
-# Ejemplo de uso
-# if __name__ == "__main__":
-#     test = ChatBot()
-#     test.chatTest()
