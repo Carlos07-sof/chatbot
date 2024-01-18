@@ -26,4 +26,8 @@ def not_found(error):
 @app.errorhandler(405)
 def method_not_allowed(error):
     return make_response(jsonify({'error': 'Método no permitido'}), 405)
+    
+if __name__ == '__main__':
+    chatbot_api = ChatbotAPI()
+    chatbot_api.run(debug=False, host = '0.0.0.0')
 
