@@ -32,9 +32,3 @@ class PostgreSQLConnection:
             self.connection.close()
             self.connection = None
             print('*CONEXION CERRADA (PostgreSQL)*')
-
-# # Ejemplo de uso
-# if __name__ == "__main__":
-#     test = PostgreSQLConnection()
-#     test.connect()
-#     test.close()
