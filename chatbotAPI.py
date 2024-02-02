@@ -1,34 +1,59 @@
-from flask import Flask, request, jsonify, make_response
-from flask_cors import CORS
+from flask import Flask, request, jsonify
+from datetime import datetime
+from geopy.geocoders import Nominatim
+from timezonefinder import TimezoneFinder
+from pytz import timezone
 
 app = Flask(__name__)
-CORS(app)
 
-#GET
-@app.route('/', methods = ['GET'])
-def inicio():
-    return jsonify({"mensaje": "Bienvenido al asistente UNACHAT"}) 
-#POST
-@app.route('/chatbot/', methods =['POST'])
-def chatbot():
-
+def obtener_hora_desde_ip(direccion_ip):
     try:
-        client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-        return jsonify({"mensaje": client_ip}) 
+        geolocalizador = Nominatim(user_agent="obtener_hora_desde_ip")
+        ubicacion = geolocalizador.geocode(direccion_ip, language='es')
+
+        if ubicacion:
+            tf = TimezoneFinder()
+            zona_horaria = timezone(tf.timezone_at(lng=ubicacion.longitude, lat=ubicacion.latitude))
+            fecha_actual = datetime.now(zona_horaria)
+            return fecha_actual.strftime('%d/%m/%Y %H:%M:%S')
+        else:
+            return "No se pudo obtener la información de ubicación para la dirección IP proporcionada."
 
     except Exception as e:
-        return jsonify({'mensaje': f'Error: {str(e)}'})
+        return f"Error al obtener la información: {e}"
 
+@app.route('/obtener_hora', methods=['POST'])
+def obtener_hora():
+    if 'ip' in request.form:
+        ip_cliente = request.form['ip']
 
-@app.errorhandler(404)
-def not_found(error):
-    return make_response(jsonify({'error': 'No se encontró el recurso solicitado'}), 404)
+        # Imprimir la dirección IP en la consola
+        print(f"Dirección IP del cliente: {ip_cliente}")
 
+        hora = obtener_hora_desde_ip(ip_cliente)
+        return jsonify({'hora': hora})
+    else:
+        return jsonify({'error': 'Se requiere la dirección IP en la solicitud POST.'})
 
-@app.errorhandler(405)
-def not_found(error):
-    return make_response(jsonify({'error': 'Método no permitido'}), 405)
+@app.route('/endpoint_chatbot', methods=['POST'])
+def endpoint_chatbot():
+    try:
+        data = request.get_json()
+        message = data.get('message')
+        
+        # Imprimir la dirección IP del cliente en la consola
+        client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        print(f"Dirección IP del cliente en el endpoint_chatbot: {client_ip}")
+
+        res = "Respuesta de chatbot"  # Reemplaza esto con la lógica real
+
+        if not res:
+            return jsonify({'mensaje': 'Respuesta no encontrada'})
+        else:
+            return jsonify({'mensaje': res})
+
+    except Exception as e:
+        return jsonify({'mensaje': f'Error: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
-
