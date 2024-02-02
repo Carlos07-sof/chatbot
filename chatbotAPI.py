@@ -9,9 +9,11 @@ app = Flask(__name__)
 def obtener_hora_desde_ip(direccion_ip):
     try:
         geolocalizador = Nominatim(user_agent="obtener_hora_desde_ip", timeout=10)  # Establece un tiempo de espera específico
-        ubicacion = geolocalizador.geocode(direccion_ip, language='es')
+        # ubicacion = geolocalizador.geocode(direccion_ip, language='es')
+        datos = respuesta.json()
 
-        if ubicacion:
+        if 'loc' in datos:
+        # if ubicacion:
             tf = TimezoneFinder()
             zona_horaria = timezone(tf.timezone_at(lng=ubicacion.longitude, lat=ubicacion.latitude))
             print(f"Zona horaria obtenida: {zona_horaria}")
