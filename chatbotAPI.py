@@ -1,6 +1,6 @@
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify
+import requests
 from datetime import datetime
-from geopy.geocoders import Nominatim
 from timezonefinder import TimezoneFinder
 from pytz import timezone
 
@@ -31,18 +31,19 @@ def obtener_hora_desde_ip():
 
         # Obtener la hora actual en la zona horaria de la dirección IP
         hora_actual = datetime.now(zona_horaria)
-        return direccion_ip, hora_actual.strftime('%H:%M')
+        return hora_actual.strftime('%H:%M')
     
     except Exception as e:
         print("Error al obtener la dirección IP pública:", e)
-        return None, None
-
+        return None
 
 @app.route('/obtener_hora', methods=['POST'])
 def obtener_hora():
     hora = obtener_hora_desde_ip()
-    return jsonify({'hora': hora})
-
+    if hora:
+        return jsonify({'hora': hora})
+    else:
+        return jsonify({'error': 'Error al obtener la hora'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
