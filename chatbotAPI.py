@@ -25,12 +25,13 @@ def obtener_hora_desde_ip(direccion_ip):
 @app.route('/obtener_hora', methods=['POST'])
 def obtener_hora():
     if 'ip' in request.form:
-        ip_cliente = request.form['ip']
+        client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        # ip_cliente = request.form['ip']
 
         # Imprimir la dirección IP en la consola
-        print(f"Dirección IP del cliente: {ip_cliente}")
+        print(f"Dirección IP del cliente: {client_ip}")
 
-        hora = obtener_hora_desde_ip(ip_cliente)
+        hora = obtener_hora_desde_ip(client_ip)
         return jsonify({'hora': hora})
     else:
         return jsonify({'error': 'Se requiere la dirección IP en la solicitud POST.'})
