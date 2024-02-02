@@ -6,7 +6,7 @@ from pytz import timezone
 
 app = Flask(__name__)
 
-def obtener_hora_desde_ip(direccion_ip):
+def obtener_hora_desde_ip():
     try:
         # Utilizar httpbin para obtener la dirección IP pública
         response = requests.get("https://httpbin.org/ip")
@@ -40,7 +40,7 @@ def obtener_hora_desde_ip(direccion_ip):
 
 @app.route('/obtener_hora', methods=['POST'])
 def obtener_hora():
-    hora = obtener_hora_desde_ip(client_ip)
+    hora = obtener_hora_desde_ip()
     return jsonify({'hora': hora})
 
 
