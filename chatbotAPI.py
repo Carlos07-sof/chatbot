@@ -24,37 +24,12 @@ def obtener_hora_desde_ip(direccion_ip):
 
 @app.route('/obtener_hora', methods=['POST'])
 def obtener_hora():
-    if 'ip' in request.form:
-        client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-        # ip_cliente = request.form['ip']
+    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    print(f"Dirección IP del cliente: {client_ip}")
 
-        # Imprimir la dirección IP en la consola
-        print(f"Dirección IP del cliente: {client_ip}")
+    hora = obtener_hora_desde_ip(client_ip)
+    return jsonify({'hora': hora})
 
-        hora = obtener_hora_desde_ip(client_ip)
-        return jsonify({'hora': hora})
-    else:
-        return jsonify({'error': 'Se requiere la dirección IP en la solicitud POST.'})
-
-@app.route('/endpoint_chatbot', methods=['POST'])
-def endpoint_chatbot():
-    try:
-        data = request.get_json()
-        message = data.get('message')
-        
-        # Imprimir la dirección IP del cliente en la consola
-        client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-        print(f"Dirección IP del cliente en el endpoint_chatbot: {client_ip}")
-
-        res = "Respuesta de chatbot"  # Reemplaza esto con la lógica real
-
-        if not res:
-            return jsonify({'mensaje': 'Respuesta no encontrada'})
-        else:
-            return jsonify({'mensaje': res})
-
-    except Exception as e:
-        return jsonify({'mensaje': f'Error: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
