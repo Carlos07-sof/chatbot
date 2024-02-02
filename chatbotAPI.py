@@ -8,30 +8,38 @@ app = Flask(__name__)
 
 def obtener_hora_desde_ip(direccion_ip):
     try:
-        geolocalizador = Nominatim(user_agent="obtener_hora_desde_ip", timeout=10)  # Establece un tiempo de espera específico
-        # ubicacion = geolocalizador.geocode(direccion_ip, language='es')
-        datos = respuesta.json()
+        # Utilizar httpbin para obtener la dirección IP pública
+        response = requests.get("https://httpbin.org/ip")
+        
+        # Analizar la respuesta JSON
+        json_data = response.json()
+        
+        # Obtener la dirección IP desde los datos JSON
+        direccion_ip = json_data.get("origin")
 
-        if 'loc' in datos:
-        # if ubicacion:
-            tf = TimezoneFinder()
-            zona_horaria = timezone(tf.timezone_at(lng=ubicacion.longitude, lat=ubicacion.latitude))
-            print(f"Zona horaria obtenida: {zona_horaria}")
-            fecha_actual = datetime.now(zona_horaria)
-            return fecha_actual.strftime('%H:%M:%S')
-        else:
-            return "No se pudo obtener la información de ubicación para la dirección IP proporcionada."
+        # Obtener las coordenadas geográficas de la dirección IP
+        respuesta_geoloc = requests.get(f'https://ipinfo.io/{direccion_ip}')
+        datos_geoloc = respuesta_geoloc.json()
+        coordenadas = datos_geoloc.get('loc').split(',')
 
-    except requests.exceptions.Timeout:
-        return "El servicio de geolocalización tardó demasiado en responder. Inténtalo de nuevo más tarde."
+        # Obtener la zona horaria de las coordenadas
+        tf = TimezoneFinder()
+        zona_horaria_str = tf.timezone_at(lng=float(coordenadas[1]), lat=float(coordenadas[0]))
+
+        # Convertir la cadena de zona horaria a un objeto tzinfo utilizando pytz
+        zona_horaria = timezone(zona_horaria_str)
+
+        # Obtener la hora actual en la zona horaria de la dirección IP
+        hora_actual = datetime.now(zona_horaria)
+        return direccion_ip, hora_actual.strftime('%H:%M')
+    
     except Exception as e:
-        return f"Error al obtener la información: {e}"
+        print("Error al obtener la dirección IP pública:", e)
+        return None, None
 
 
 @app.route('/obtener_hora', methods=['POST'])
 def obtener_hora():
-    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
-    print(f"Dirección IP del cliente: {client_ip}")
     hora = obtener_hora_desde_ip(client_ip)
     return jsonify({'hora': hora})
 
