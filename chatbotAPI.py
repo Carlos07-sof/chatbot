@@ -15,7 +15,7 @@ def obtener_hora_desde_ip(direccion_ip):
             tf = TimezoneFinder()
             zona_horaria = timezone(tf.timezone_at(lng=ubicacion.longitude, lat=ubicacion.latitude))
             fecha_actual = datetime.now(zona_horaria)
-            return fecha_actual.strftime('%d/%m/%Y %H:%M:%S')
+            return fecha_actual.strftime('%H:%M:%S')
         else:
             return "No se pudo obtener la información de ubicación para la dirección IP proporcionada."
 
