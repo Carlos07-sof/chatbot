@@ -10,7 +10,6 @@ def obtener_hora_desde_ip(direccion_ip):
     try:
         geolocalizador = Nominatim(user_agent="obtener_hora_desde_ip")
         ubicacion = geolocalizador.geocode(direccion_ip, language='es')
-
         if ubicacion:
             tf = TimezoneFinder()
             zona_horaria = timezone(tf.timezone_at(lng=ubicacion.longitude, lat=ubicacion.latitude))
@@ -18,15 +17,13 @@ def obtener_hora_desde_ip(direccion_ip):
             return fecha_actual.strftime('%d/%m/%Y %H:%M:%S')
         else:
             return "No se pudo obtener la información de ubicación para la dirección IP proporcionada."
-
     except Exception as e:
         return f"Error al obtener la información: {e}"
 
 @app.route('/obtener_hora', methods=['POST'])
 def obtener_hora():
-    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
     print(f"Dirección IP del cliente: {client_ip}")
-
     hora = obtener_hora_desde_ip(client_ip)
     return jsonify({'hora': hora})
 
